@@ -100,6 +100,47 @@ app.get('/view',(req,res)=>{
 
 })
 
+app.get('/delete',(req,res)=>{
+    //lay user can xoa
+    let user = req.query.user;
+    //1.doc file len mang
+    let file = fs.readFileSync(fileName,'utf8');
+    let users = file.split('/');
+    let userJson = [];
+    //bo user dau tien
+    users.shift();
+    users.forEach(element => {
+        let name = element.split(':')[0];
+        let password = element.split(':')[1];
+        let user = {
+            'name' : name,
+            'password' : password
+        }
+        userJson.push(user);
+    });
+    //2.xoa user trong mang
+    let indexToDelete =-1;
+    for(i=0;i<userJson.length;i++){
+        if(userJson[i].name==user){
+            indexToDelete =i;
+            break;
+        }
+    }
+    if(indexToDelete !=-1){
+        userJson.splice(indexToDelete,1);
+    }else{
+        console.debug("User is invalid");
+    }
+    //3.cap nhat file tu Memory vao File
+    let contentToUpdate = null;
+    userJson.forEach(element => {
+        contentToUpdate = '/' + element.name + ':'+  element.password;
+    });
+    fs.writeFileSync(fileName,contentToUpdate);
+    res.redirect('/');
+
+})
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
 console.debug('Server is runing..' + PORT);

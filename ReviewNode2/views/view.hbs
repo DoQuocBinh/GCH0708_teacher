@@ -4,17 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <body>
-    <table border="1">
-        <tr>
-            <td>User</td>
-            <td>Password</td>
-        </tr>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>User</th>
+                <th>Password</th>
+                <th>Delete</th>
+            </tr>
+        </thead> 
         {{#each model}}
         <tr>
             <td>{{name}}</td>
             <td>{{password}}</td>
+            <td><a href="/delete?user={{name}}">Delete {{name}}</a></td>
         </tr>
         {{/each}}
     </table>
