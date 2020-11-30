@@ -82,20 +82,7 @@ app.get('/',(req,res)=>{
 app.get('/view',(req,res)=>{
     let nameF = req.body.txtName;
     let passwordF = req.body.txtPassword;
-    let file = fs.readFileSync(fileName,'utf8');
-    let users = file.split('/');
-    let userJson = [];
-    //bo user dau tien
-    users.shift();
-    users.forEach(element => {
-        let name = element.split(':')[0];
-        let password = element.split(':')[1];
-        let user = {
-            'name' : name,
-            'password' : password
-        }
-        userJson.push(user);
-    });
+    let userJson = readFileToArray();
     res.render('view',{model : userJson})
 
 })
@@ -104,20 +91,8 @@ app.get('/delete',(req,res)=>{
     //lay user can xoa
     let user = req.query.user;
     //1.doc file len mang
-    let file = fs.readFileSync(fileName,'utf8');
-    let users = file.split('/');
-    let userJson = [];
-    //bo user dau tien
-    users.shift();
-    users.forEach(element => {
-        let name = element.split(':')[0];
-        let password = element.split(':')[1];
-        let user = {
-            'name' : name,
-            'password' : password
-        }
-        userJson.push(user);
-    });
+    let userJson = readFileToArray();
+   
     //2.xoa user trong mang
     let indexToDelete =-1;
     for(i=0;i<userJson.length;i++){
@@ -132,15 +107,74 @@ app.get('/delete',(req,res)=>{
         console.debug("User is invalid");
     }
     //3.cap nhat file tu Memory vao File
-    let contentToUpdate = null;
+    let contentToUpdate = '';
     userJson.forEach(element => {
-        contentToUpdate = '/' + element.name + ':'+  element.password;
+        contentToUpdate += '/' + element.name + ':'+  element.password;
     });
     fs.writeFileSync(fileName,contentToUpdate);
     res.redirect('/');
 
 })
 
+app.get('/edit',(req,res)=>{
+    let userName = req.query.user;
+    let userJson = readFileToArray();
+    let userToUpdate =null;
+    userJson.forEach(element => {
+        if(element.name==userName){
+            userToUpdate = element;
+        }
+    });
+    if(userToUpdate==null)
+        res.end('Invalid user');
+    else
+        res.render('edit',{user:userToUpdate})
+
+})
+app.post('/update',(req,res)=>{
+    //lay ten,password nguoi dung update tren form
+    let nameF = req.body.txtName;
+    let passwordF = req.body.txtPassword;
+    //1.doc du lieu len array
+    let userJson = readFileToArray();
+    //2.cap nhat mang
+    for(i=0;i<userJson.length;i++){
+        if(userJson[i].name== nameF ){
+            //update password for this user
+            userJson[i].password= passwordF;
+            break;
+        }
+    }
+    //3.cap nhat file tu Array vao File
+    let contentToUpdate = '';
+    userJson.forEach(element => {
+        contentToUpdate += '/' + element.name + ':'+  element.password;
+    });
+    fs.writeFileSync(fileName,contentToUpdate);
+    res.redirect('/');
+
+    
+})
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
 console.debug('Server is runing..' + PORT);
+
+function readFileToArray() {
+    let file = fs.readFileSync(fileName, 'utf8');
+    let users = file.split('/');
+    let userJson = [];
+    //bo user dau tien
+    users.shift();
+    users.forEach(element => {
+        let name = element.split(':')[0];
+        let password = element.split(':')[1];
+        let user = {
+            'name': name,
+            'password': password
+        };
+        userJson.push(user);
+    });
+    return userJson;
+}
+
