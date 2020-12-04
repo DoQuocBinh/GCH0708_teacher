@@ -1,5 +1,6 @@
 var express = require('express')
 var app= express()
+var fs = require('fs')
 
 
 //const engines = require('consolidate');
@@ -31,6 +32,31 @@ hbs.registerHelper('getCurrentYear',()=>{
 hbs.registerHelper('screamIt',(msg)=>{
     return msg.toUpperCase();
 })
+
+const fileName= 'user.txt'
+hbs.registerHelper('findUser',(name)=>{
+    let content = fs.readFileSync(fileName,'utf8');
+    let users = content.split('/');
+    users.shift();
+    let userJson = []
+    users.forEach(element => {
+            let user = {
+                name: element.split(':')[0]
+            }
+            userJson.push(user);
+    });
+    console.log(userJson.length);
+    let found = false;
+    for(i=0;i<userJson.length;i++){
+        if (userJson[i].name==name){
+            found = true;
+            break;
+        }
+    }
+    return found;
+})
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
