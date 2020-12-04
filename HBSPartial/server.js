@@ -17,6 +17,13 @@ app.get('/',(req,res)=>{
         currentYear: new Date().getFullYear()
     })
 })
+app.get('/maintenance',(req,res)=>{
+    res.render('template',{pageTitle:'About Page',body:'Maintenance body'});
+})
+
+app.get('/about',(req,res)=>{
+    res.render('template',{pageTitle:'About Page',body:'About us body'});
+})
 
 hbs.registerHelper('getCurrentYear',()=>{
     return new Date().getFullYear();
