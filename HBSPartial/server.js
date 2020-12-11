@@ -1,3 +1,4 @@
+const { debug } = require('console');
 var express = require('express')
 var app= express()
 var fs = require('fs')
@@ -19,7 +20,14 @@ app.get('/',(req,res)=>{
     })
 })
 app.get('/maintenance',(req,res)=>{
-    res.render('template',{pageTitle:'About Page',body:'Maintenance body'});
+    //doc file maintain.hbs
+    let staticContent = fs.readFileSync('./views/maintain.hbs','utf8');
+    let n = ['Ha','Linh','Cuong'];
+    let dynamicContent = hbs.compile(staticContent)
+    let result = dynamicContent({
+        name: n
+    })
+    res.render('template',{pageTitle:'About Page',body:result});
 })
 
 app.get('/about',(req,res)=>{
